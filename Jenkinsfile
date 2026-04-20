@@ -16,12 +16,18 @@ pipeline {
         }
 
         stage('Code Quality') {
-            steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh 'npx sonar-scanner'
-                }
-            }
+    steps {
+        withSonarQubeEnv('sonarqube') {
+            sh '''
+            docker run --rm \
+            -e SONAR_HOST_URL=$SONAR_HOST_URL \
+            -e SONAR_LOGIN=$SONAR_AUTH_TOKEN \
+            -v $(pwd):/usr/src \
+            sonarsource/sonar-scanner-cli
+            '''
         }
+    }
+}
 
         stage('Security') {
             steps {
