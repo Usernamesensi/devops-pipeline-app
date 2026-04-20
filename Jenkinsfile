@@ -17,15 +17,13 @@ pipeline {
 
         stage('Code Quality') {
     steps {
-        withSonarQubeEnv('sonarqube') {
-            sh '''
-            docker run --rm \
-            -e SONAR_HOST_URL=http://host.docker.internal:9000 \
-            -e SONAR_LOGIN=$SONAR_AUTH_TOKEN \
-            -v $(pwd):/usr/src \
-            sonarsource/sonar-scanner-cli
-            '''
-        }
+        sh '''
+        docker run --rm \
+        -e SONAR_HOST_URL=http://host.docker.internal:9000 \
+        -e SONAR_LOGIN=squ_00b939d089776123905b650c6f4f488b7e8deddc \
+        -v $(pwd):/usr/src \
+        sonarsource/sonar-scanner-cli
+        '''
     }
 }
 
