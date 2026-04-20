@@ -17,7 +17,9 @@ pipeline {
 
         stage('Code Quality') {
             steps {
-                echo 'Code Quality Stage'
+                withSonarQubeEnv('sonarqube') {
+                    sh 'npx sonar-scanner'
+                }
             }
         }
 
@@ -29,7 +31,8 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker run -d -p 3004:3000 devops-app'
+                sh 'docker rm -f devops-container || true'
+                sh 'docker run -d -p 3004:3000 --name devops-container devops-app'
             }
         }
 
@@ -41,7 +44,7 @@ pipeline {
 
         stage('Monitoring') {
             steps {
-                echo 'Monitoring logs'
+                sh 'docker logs devops-container || true'
             }
         }
     }
