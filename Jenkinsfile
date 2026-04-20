@@ -16,16 +16,18 @@ pipeline {
         }
 
         stage('Code Quality') {
-    steps {
-        sh '''
-        docker run --rm \
-        -e SONAR_HOST_URL=http://host.docker.internal:9000 \
-        -e SONAR_LOGIN=squ_00b939d089776123905b650c6f4f488b7e8deddc \
-        -v $(pwd):/usr/src \
-        sonarsource/sonar-scanner-cli
-        '''
-    }
-}
+            steps {
+                sh '''
+                docker run --rm \
+                -v /var/jenkins_home/workspace/DevSecOps-Pipeline:/usr/src \
+                sonarsource/sonar-scanner-cli \
+                -Dsonar.projectKey=devops-app \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=http://host.docker.internal:9000 \
+                -Dsonar.login=squ_b3a645ec3b03aff93c4bd6d1f406a8209f7e6ad4
+                '''
+            }
+        }
 
         stage('Security') {
             steps {
@@ -34,14 +36,14 @@ pipeline {
         }
 
         stage('Deploy') {
-    steps {
-        sh '''
-        docker stop devops-app-container || true
-        docker rm devops-app-container || true
-        docker run -d -p 3004:3000 --name devops-app-container devops-app
-        '''
-    }
-}
+            steps {
+                sh '''
+                docker stop devops-app-container || true
+                docker rm devops-app-container || true
+                docker run -d -p 3004:3000 --name devops-app-container devops-app
+                '''
+            }
+        }
 
         stage('Release') {
             steps {
@@ -51,7 +53,7 @@ pipeline {
 
         stage('Monitoring') {
             steps {
-                sh 'docker logs devops-container || true'
+                sh 'docker logs devops-app-container || true'
             }
         }
     }
