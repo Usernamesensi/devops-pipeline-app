@@ -36,11 +36,14 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                sh 'docker rm -f devops-container || true'
-                sh 'docker run -d -p 3004:3000 --name devops-container devops-app'
-            }
-        }
+    steps {
+        sh '''
+        docker stop devops-app-container || true
+        docker rm devops-app-container || true
+        docker run -d -p 3004:3000 --name devops-app-container devops-app
+        '''
+    }
+}
 
         stage('Release') {
             steps {
